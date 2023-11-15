@@ -1,22 +1,15 @@
+import argparse
 import os
 import time
+from tkinter import ttk
 import requests
 import re
-from colorama import Fore, Style
+import tkinter as tk
+from tkinter import *
 
-HTML_TAG_REGEX = re.compile("<.*?>")
 
 class bcolors:
     Red = "\033[91m"
-    Green = "\033[92m"
-    Blue = "\033[94m"
-    Cyan = "\033[96m"
-    White = "\033[97m"
-    Yellow = "\033[93m"
-    Magenta = "\033[95m"
-    Grey = "\033[90m"
-    Black = "\033[90m"
-    Default = "\033[99m"
     UNDERLINE = "\033[4m"
     ENDC = "\033[0m"
 
@@ -25,6 +18,7 @@ class BuildSpeedReadingString:
     VOWELS = {"a", "e", "i", "o", "u"}
 
     def __init__(self, word: str) -> None:
+        self.original_word = word
         self.word = word
         self.word_length = len(word)
         self.prominent_vowel = 0
@@ -38,17 +32,7 @@ class BuildSpeedReadingString:
         self.prominent_vowel += self.offset
 
     def __str__(self) -> str:
-        try:
-            columns = os.get_terminal_size().columns
-        except OSError:
-            columns = 80  # Default value if terminal size cannot be obtained
-
-        formatted_word = (
-            f"{self.word[:self.prominent_vowel]}{bcolors.Red}{bcolors.UNDERLINE}"
-            f"{self.word[self.prominent_vowel]}{bcolors.ENDC}{self.word[self.prominent_vowel+1:]}"
-        )
-
-        return formatted_word.center(columns)
+        return self.word
 
     def process_short_word(self) -> None:
         """Process a short word."""
@@ -71,38 +55,147 @@ class BuildSpeedReadingString:
         """Find the position of the first vowel in a word, starting from the given index."""
         mid = len(self.word) // 2
         prominent_vowel = start
-        while self.word[prominent_vowel] not in self.VOWELS and prominent_vowel < mid - 1:
+        while (
+            self.word[prominent_vowel] not in self.VOWELS and prominent_vowel < mid - 1
+        ):
             prominent_vowel += 1
         return prominent_vowel
 
 
-def clean_html(raw_html: str) -> str:
-    """Remove HTML tags from a string."""
-    return re.sub(HTML_TAG_REGEX, "", raw_html)
+class SpeedRead(tk.Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+
+        self.master = master
+        self.grid(row=4, column=2)
+        self.var = StringVar()
+
+        Label(self, text="", font="Courier 17 bold", anchor="center").grid(
+            row=0, column=0, padx=50
+        )
+        Label(self, text="", font="Courier 17 bold", anchor="center").grid(
+            row=0, column=2, padx=50
+        )
+        Label(
+            self, textvariable=self.var, font="Courier 17 bold", anchor="s", width=50
+        ).grid(row=1, column=1)
+        Label(
+            self,
+            text="|",
+            font="Courier 17 bold",
+            foreground="red",
+            anchor="n",
+            width=50,
+            fg="red",
+        ).grid(row=0, column=1)
+        Label(
+            self,
+            text="|",
+            font="Courier 17 bold",
+            foreground="red",
+            anchor="n",
+            width=50,
+            fg="red",
+        ).grid(row=2, column=1)
+        ttk.Button(self, text="Quit", command=self.master.destroy).grid(row=3, column=1)
 
 
-def generate_word_list(text: str) -> list:
-    """Generate a list of alphanumeric words from the given text."""
-    return [char.lower() for char in text.split() if char.isalnum()]
+class PrintToTerminal:
+    @staticmethod
+    def print_to_terminal(word):
+        columns = os.get_terminal_size().columns
+        print(PrintToTerminal.format_string_for_printing(word).center(columns))
+        time.sleep(0.1)
+        os.system("cls" if os.name == "nt" else "clear")
+
+    @staticmethod
+    def format_string_for_printing(word):
+        try:
+            columns = os.get_terminal_size().columns
+        except OSError:
+            columns = 80  # Default value if terminal size cannot be obtained
+
+        formatted_word = (
+            f"{word.word[:word.prominent_vowel]}{bcolors.Red}{bcolors.UNDERLINE}"
+            f"{word.word[word.prominent_vowel]}{bcolors.ENDC}{word.word[word.prominent_vowel+1:]}"
+        )
+
+        return formatted_word
+
+
+class ArticleGetter:
+    ARTICLE_URL = "https://editorial.digitalcontent.sky/articles/12905218.json"
+    HTML_TAG_REGEX = re.compile(r"<.*?>")  # Compile the regex for better performance
+
+    @staticmethod
+    def get_article_body():
+        try:
+            response = requests.get(ArticleGetter.ARTICLE_URL)
+            response.raise_for_status()
+            body = response.json().get("body", "")
+
+        except requests.RequestException as e:
+            print(f"Error retrieving content: {e}")
+            return None
+
+        return ArticleGetter.generate_word_list(ArticleGetter.clean_html(body))
+
+    @staticmethod
+    def clean_html(raw_html: str) -> str:
+        """Remove HTML tags from a string."""
+        return re.sub(ArticleGetter.HTML_TAG_REGEX, "", raw_html)
+
+    @staticmethod
+    def generate_word_list(text: str) -> list:
+        """Generate a list of alphanumeric words from the given text."""
+        return [char.lower() for char in text.split() if char.isalnum()]
+
+
+class OutputHelper:
+    @staticmethod
+    def print_to_UI_helper(word_list):
+        def display_word(root, var, word):
+            result = BuildSpeedReadingString(word)
+            var.set(str(result))
+            root.update()
+            time.sleep(0.5)
+
+        root = tk.Tk()
+        app = SpeedRead(master=root)
+
+        for word in word_list:
+            display_word(root, app.var, word)
+
+        root.mainloop()
+
+    @staticmethod
+    def print_to_terminal_helper(word_list):
+        os.system("cls" if os.name == "nt" else "clear")
+        columns = os.get_terminal_size().columns
+        for word in word_list:
+            word = BuildSpeedReadingString(word)
+            PrintToTerminal.print_to_terminal(word)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Print or display output.")
+    #parser.add_argument("text", help="Text to be displayed or printed.")
+    parser.add_argument(
+        "--output-type",
+        choices=["terminal", "ui"],
+        default="ui",
+        help="Choose output type: terminal or ui (default: terminal).",
+    )
+
+    args = parser.parse_args()
+    word_list = ArticleGetter.get_article_body()
+
+    if args.output_type == "terminal":
+        OutputHelper.print_to_terminal_helper(word_list)
+
+    elif args.output_type == "ui":
+        OutputHelper.print_to_UI_helper(word_list)
 
 
 if __name__ == "__main__":
-    try:
-        response = requests.get(
-            "https://editorial.digitalcontent.sky/articles/12905218.json"
-        )
-        response.raise_for_status()
-        body = response.json()["body"]
-    except requests.RequestException as e:
-        print(f"Error retrieving content: {e}")
-        exit(1)
-
-    os.system("cls" if os.name == "nt" else "clear")
-    columns = os.get_terminal_size().columns
-    print("hello world".center(columns))
-
-    word_list = generate_word_list(clean_html(body))
-    for word in word_list:
-        print(BuildSpeedReadingString(word))
-        time.sleep(0.1)
-        os.system("cls" if os.name == "nt" else "clear")
+    main()
