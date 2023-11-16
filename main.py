@@ -160,7 +160,7 @@ class ArticleGetter:
     @staticmethod
     def get_article_body():
         try:
-            response = requests.get(ArticleGetter.ARTICLE_URL)
+            response = requests.get(ArticleGetter.ARTICLE_URL, timeout = 10)
             response.raise_for_status()
             body = response.json().get("body", "")
 
