@@ -185,7 +185,7 @@ class OutputHelper:
             result = BuildSpeedReadingString(word)
             var.set(str(result))
             root.update()
-            time.sleep(0.5)
+            time.sleep(0.1)
 
         root = tk.Tk()
         app = SpeedRead(master=root)
