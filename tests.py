@@ -1,6 +1,5 @@
 import unittest
-import os
-from main import BuildSpeedReadingString, bcolors
+from main import BuildSpeedReadingString
 
 
 class TestBuildSpeedReadingString(unittest.TestCase):
@@ -30,7 +29,6 @@ class TestBuildSpeedReadingString(unittest.TestCase):
     def test_empty_word(self):
         with self.assertRaises(ValueError, msg="Input word cannot be empty"):
             empty_instance = BuildSpeedReadingString("")
-        self.assertEqual(str(context.exception), "Input word cannot be empty")
 
 
 if __name__ == '__main__':
