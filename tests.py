@@ -31,4 +31,8 @@ class TestBuildSpeedReadingString(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             empty_instance = BuildSpeedReadingString("")
         self.assertEqual(str(context.exception), "Input word cannot be empty")
+
+
+if __name__ == '__main__':
     unittest.main()
+
