@@ -200,8 +200,10 @@ class OutputHelper:
             word = BuildSpeedReadingString(word)
             PrintToTerminal.print_to_terminal(word)
 
-def calculate_refresh_rate(word_per_minute: int)->float:
-    return 60/word_per_minute
+
+def calculate_refresh_rate(word_per_minute: int) -> float:
+    return 60 / word_per_minute
+
 
 def main():
     parser = argparse.ArgumentParser(description="Print or display output.")
@@ -213,7 +215,12 @@ def main():
         help="Choose output type: terminal or ui (default: terminal).",
     )
     parser.add_argument(
-        "-W", "--words-per-minute", action='store', choices=range(1, 1000), default=600, type=int
+        "-W",
+        "--words-per-minute",
+        action="store",
+        choices=range(1, 1000),
+        default=600,
+        type=int,
     )
 
     args = parser.parse_args()
