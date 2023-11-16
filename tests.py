@@ -27,4 +27,8 @@ class TestBuildSpeedReadingString(unittest.TestCase):
         self.assertEqual(str(single_vowel_instance), "  apple")
         self.assertEqual(single_vowel_instance.prominent_vowel, 3)
 
+    def test_empty_word(self):
+        with self.assertRaises(ValueError) as context:
+            empty_instance = BuildSpeedReadingString("")
+        self.assertEqual(str(context.exception), "Input word cannot be empty")
     unittest.main()
