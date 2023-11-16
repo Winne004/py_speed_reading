@@ -5,12 +5,10 @@ import argparse
 import os
 import time
 import tkinter as tk
-from tkinter import * # pylint: disable=wildcard-import
+from tkinter import *
 from tkinter import ttk
 import re
 import requests
-
-
 
 
 class bcolors:
@@ -21,7 +19,7 @@ class bcolors:
 
 class BuildSpeedReadingString:
     """
-    A class for generating speed reading strings by adding spaces based on the position of the first 
+    A class for generating speed reading strings by adding spaces based on the position of the first
     vowel.
 
     Attributes:
@@ -34,13 +32,13 @@ class BuildSpeedReadingString:
     Methods:
     - __init__(self, word: str): Initializes the speed reading string with the given word.
     - __str__(self) -> str: Returns the processed speed reading string.
-    - process_short_word(self) -> None: Processes a short word by finding the first vowel and 
+    - process_short_word(self) -> None: Processes a short word by finding the first vowel and
       adding spaces.
     - process_long_word(self) -> None: Processes a long word by finding the first vowel after [0]
       and adding spaces.
-    - pad_string(self) -> tuple: Pads the string with spaces based on the position of its 
+    - pad_string(self) -> tuple: Pads the string with spaces based on the position of its
       first vowel.
-    - find_first_vowel(self, start=0) -> int: Finds the position of the first vowel in a word, 
+    - find_first_vowel(self, start=0) -> int: Finds the position of the first vowel in a word,
       starting from the given index.
     """
 
@@ -157,7 +155,7 @@ class ArticleGetter:
     @staticmethod
     def get_article_body():
         try:
-            response = requests.get(ArticleGetter.ARTICLE_URL, timeout = 10)
+            response = requests.get(ArticleGetter.ARTICLE_URL, timeout=10)
             response.raise_for_status()
             body = response.json().get("body", "")
 
