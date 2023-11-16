@@ -5,7 +5,7 @@ import argparse
 import os
 import time
 import tkinter as tk
-from tkinter import *
+from tkinter import *  # pylint: disable=wildcard-import
 from tkinter import ttk
 import re
 import requests
@@ -178,12 +178,12 @@ class ArticleGetter:
 
 class OutputHelper:
     @staticmethod
-    def print_to_UI_helper(word_list):
+    def print_to_UI_helper(word_list, refresh_rate):
         def display_word(root, var, word):
             result = BuildSpeedReadingString(word)
             var.set(str(result))
             root.update()
-            time.sleep(0.1)
+            time.sleep(refresh_rate)
 
         root = tk.Tk()
         app = SpeedRead(master=root)
@@ -194,12 +194,14 @@ class OutputHelper:
         root.mainloop()
 
     @staticmethod
-    def print_to_terminal_helper(word_list):
+    def print_to_terminal_helper(word_list, refresh_rate):
         os.system("cls" if os.name == "nt" else "clear")
         for word in word_list:
             word = BuildSpeedReadingString(word)
             PrintToTerminal.print_to_terminal(word)
 
+def calculate_refresh_rate(word_per_minute: int)->float:
+    return 60/word_per_minute
 
 def main():
     parser = argparse.ArgumentParser(description="Print or display output.")
@@ -210,15 +212,19 @@ def main():
         default="ui",
         help="Choose output type: terminal or ui (default: terminal).",
     )
+    parser.add_argument(
+        "-W", "--words-per-minute", action='store', choices=range(1, 1000), default=600, type=int
+    )
 
     args = parser.parse_args()
     word_list = ArticleGetter.get_article_body()
+    refresh_rate = calculate_refresh_rate(args.words_per_minute)
 
     if args.output_type == "terminal":
-        OutputHelper.print_to_terminal_helper(word_list)
+        OutputHelper.print_to_terminal_helper(word_list, refresh_rate)
 
     elif args.output_type == "ui":
-        OutputHelper.print_to_UI_helper(word_list)
+        OutputHelper.print_to_UI_helper(word_list, refresh_rate)
 
 
 if __name__ == "__main__":
