@@ -4,11 +4,13 @@
 import argparse
 import os
 import time
-from tkinter import ttk
-import requests
-import re
 import tkinter as tk
-from tkinter import *
+from tkinter import * # pylint: disable=wildcard-import
+from tkinter import ttk
+import re
+import requests
+
+
 
 
 class bcolors:
