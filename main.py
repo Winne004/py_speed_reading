@@ -140,11 +140,6 @@ class PrintToTerminal:
 
     @staticmethod
     def format_string_for_printing(word):
-        try:
-            columns = os.get_terminal_size().columns
-        except OSError:
-            columns = 80  # Default value if terminal size cannot be obtained
-
         formatted_word = (
             f"{word.word[:word.prominent_vowel]}{bcolors.Red}{bcolors.UNDERLINE}"
             f"{word.word[word.prominent_vowel]}{bcolors.ENDC}{word.word[word.prominent_vowel+1:]}"
