@@ -1,3 +1,6 @@
+"""Py Speed Reader
+
+"""
 import argparse
 import os
 import time
@@ -15,6 +18,30 @@ class bcolors:
 
 
 class BuildSpeedReadingString:
+    """
+    A class for generating speed reading strings by adding spaces based on the position of the first 
+    vowel.
+
+    Attributes:
+    - original_word (str): The original word provided during initialization.
+    - word (str): The processed word with added spaces for speed reading.
+    - word_length (int): The length of the original word.
+    - prominent_vowel (int): The index of the first prominent vowel in the word.
+    - offset (int): The number of spaces added to the word.
+
+    Methods:
+    - __init__(self, word: str): Initializes the speed reading string with the given word.
+    - __str__(self) -> str: Returns the processed speed reading string.
+    - process_short_word(self) -> None: Processes a short word by finding the first vowel and 
+      adding spaces.
+    - process_long_word(self) -> None: Processes a long word by finding the first vowel after [0]
+      and adding spaces.
+    - pad_string(self) -> tuple: Pads the string with spaces based on the position of its 
+      first vowel.
+    - find_first_vowel(self, start=0) -> int: Finds the position of the first vowel in a word, 
+      starting from the given index.
+    """
+
     VOWELS = {"a", "e", "i", "o", "u"}
 
     def __init__(self, word: str) -> None:
@@ -181,7 +208,7 @@ class OutputHelper:
 
 def main():
     parser = argparse.ArgumentParser(description="Print or display output.")
-    #parser.add_argument("text", help="Text to be displayed or printed.")
+    # parser.add_argument("text", help="Text to be displayed or printed.")
     parser.add_argument(
         "--output-type",
         choices=["terminal", "ui"],
