@@ -18,6 +18,9 @@ class BuildSpeedReadingString:
     VOWELS = {"a", "e", "i", "o", "u"}
 
     def __init__(self, word: str) -> None:
+        if not word:
+            raise ValueError("Input word cannot be empty")
+
         self.original_word = word
         self.word = word
         self.word_length = len(word)
