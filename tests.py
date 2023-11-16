@@ -22,6 +22,9 @@ class TestBuildSpeedReadingString(unittest.TestCase):
         expected_output = " rhythm"
         self.assertEqual(str(speed_reader), expected_output)
 
+    def test_single_vowel_word(self):
+        single_vowel_instance = BuildSpeedReadingString("apple")
+        self.assertEqual(str(single_vowel_instance), "  apple")
+        self.assertEqual(single_vowel_instance.prominent_vowel, 3)
 
-if __name__ == "__main__":
     unittest.main()
