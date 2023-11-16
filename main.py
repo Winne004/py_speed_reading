@@ -174,7 +174,6 @@ class OutputHelper:
     @staticmethod
     def print_to_terminal_helper(word_list):
         os.system("cls" if os.name == "nt" else "clear")
-        columns = os.get_terminal_size().columns
         for word in word_list:
             word = BuildSpeedReadingString(word)
             PrintToTerminal.print_to_terminal(word)
